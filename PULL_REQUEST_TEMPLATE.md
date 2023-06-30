@@ -1,4 +1,4 @@
-# Pull Request Template
+# PULL REQUEST TEMPLATE
 
 ## Description
 
