@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug in Optimus
-labels: kind/bug
+labels: kind/bug/fixit
 body:
   - type: textarea
     id: warning
