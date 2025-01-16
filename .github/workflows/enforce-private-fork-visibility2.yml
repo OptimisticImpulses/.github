@@ -1,0 +1,28 @@
+name: Enforce Private Fork Visibility
+
+on:
+  create:
+    types: [repository]
+
+jobs:
+  enforce-private-visibility:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Repository Visibility
+        id: check_visibility
+        run: |
+          if [ "${{ github.event.repository.fork }}" == "true" ] && [ "${{ github.event.repository.private }}" == "false" ]; then
+            echo "Fork is public, changing to private"
+            echo "should_update=true" >> $GITHUB_ENV
+          else
+            echo "No action needed"
+            echo "should_update=false" >> $GITHUB_ENV
+
+      - name: Change Visibility to Private
+        if: env.should_update == 'true'
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.event.repository.full_name }} \
+            -d '{"private":true}'
