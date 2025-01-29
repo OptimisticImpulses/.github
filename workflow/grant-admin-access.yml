@@ -1,8 +1,8 @@
-name: Grant Admin Access on Repository Transfer
+name: Grant Admin Access on Repository Dispatch
 
 on:
-  repository:
-    types: [transferred]
+  repository_dispatch:
+    types: [grant_admin_access]
 
 jobs:
   grant-admin-access:
@@ -14,7 +14,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REPO=${{ github.repository }}
-          USER=$(jq -r '.sender.login' "$GITHUB_EVENT_PATH")
+          USER=${{ github.event.client_payload.user }}
           ORG=$(echo $REPO | cut -d'/' -f1)
           REPO_NAME=$(echo $REPO | cut -d'/' -f2)
           curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
