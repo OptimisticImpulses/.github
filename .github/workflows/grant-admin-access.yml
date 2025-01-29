@@ -1,0 +1,23 @@
+name: Grant Admin Access on Repository Dispatch
+
+on:
+  repository_dispatch:
+    types: [grant_admin_access]
+
+jobs:
+  grant-admin-access:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Grant admin access to the user who transferred the repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO=${{ github.repository }}
+          USER=${{ github.event.client_payload.user }}
+          ORG=$(echo $REPO | cut -d'/' -f1)
+          REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+          curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "https://api.github.com/orgs/$ORG/teams/admins/repos/$ORG/$REPO_NAME" \
+               -d "{\"permission\": \"admin\"}"
