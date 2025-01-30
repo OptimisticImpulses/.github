@@ -1,0 +1,25 @@
+name: Create Missing Labels
+
+on:
+  push:
+    paths:
+      - .github/ISSUE_TEMPLATE/**
+
+jobs:
+  create-labels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Create labels
+        run: |
+          labels=("bug" "needs-triage" "update")
+          for label in "${labels[@]}"; do
+            if ! gh label list | grep -q "^$label\b"; then
+              gh label create "$label" --color "f29513" --description "Description for $label"
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
